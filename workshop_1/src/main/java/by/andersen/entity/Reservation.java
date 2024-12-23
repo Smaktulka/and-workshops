@@ -1,6 +1,7 @@
 package by.andersen.entity;
 
 import by.andersen.dto.PeriodDto;
+import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class Reservation implements Identifiable<Long> {
+public class Reservation implements Identifiable<Long>, Serializable {
   private Long id;
   private Long ownerId;
   private Long workspaceId;
