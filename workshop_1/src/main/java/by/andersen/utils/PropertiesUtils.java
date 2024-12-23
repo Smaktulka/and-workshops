@@ -1,11 +1,10 @@
 package by.andersen.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
@@ -20,9 +19,9 @@ public class PropertiesUtils {
 
   public static PropertiesUtils loadAppPropertiesFile() {
     Properties properties = new Properties();
-    File appPropertiesFile = getAppPropertiesFile();
+    Path appPropertiesFile = getAppPropertiesFile();
     try {
-      properties.load(Files.newInputStream(appPropertiesFile.toPath()));
+      properties.load(Files.newInputStream(appPropertiesFile));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -30,27 +29,26 @@ public class PropertiesUtils {
     return new PropertiesUtils(properties);
   }
 
-  public Optional<File> getRepositoryStateFile() {
+  public Optional<Path> getRepositoryStateFile() {
     if (properties.getProperty(REPOSITORY_STATE_FILEPATH) == null) {
       return Optional.empty();
     }
 
-    URI repositoryStateFileUri;
+    URI resourcesUri;
     try {
-      repositoryStateFileUri = ClassLoader.getSystemResource("").toURI();
+      resourcesUri = ClassLoader.getSystemResource("").toURI();
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
 
-    String repositoryStateFilePath = Paths.get(repositoryStateFileUri).toString();
+    Path resourcesPath = Paths.get(resourcesUri);
+    Path repositoryStateFilePath =
+        Paths.get(resourcesPath.toString(), properties.getProperty(REPOSITORY_STATE_FILEPATH));
 
-    String fileSeparator = FileSystems.getDefault().getSeparator();
-    repositoryStateFilePath += fileSeparator + properties.getProperty(REPOSITORY_STATE_FILEPATH);
-
-    return Optional.of(new File(repositoryStateFilePath));
+    return Optional.of(repositoryStateFilePath);
   }
 
-  private static File getAppPropertiesFile() {
+  private static Path getAppPropertiesFile() {
     URI appPropertiesUri;
     try {
       appPropertiesUri = ClassLoader.getSystemResource(APP_PROPERTIES_FILENAME).toURI();
@@ -58,7 +56,6 @@ public class PropertiesUtils {
       throw new RuntimeException(e);
     }
 
-    String appPropertiesPath = Paths.get(appPropertiesUri).toString();
-    return new File(appPropertiesPath);
+    return Paths.get(appPropertiesUri);
   }
 }

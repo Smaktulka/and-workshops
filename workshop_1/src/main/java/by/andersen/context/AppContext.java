@@ -4,9 +4,9 @@ import by.andersen.repository.ReservationRepository;
 import by.andersen.repository.UserRepository;
 import by.andersen.repository.WorkspaceRepository;
 import by.andersen.utils.PropertiesUtils;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,25 +32,28 @@ public class AppContext {
 
     PropertiesUtils propertiesUtils = PropertiesUtils.loadAppPropertiesFile();
 
-    Optional<File> optionalRepositoryStateFile = propertiesUtils.getRepositoryStateFile();
+    Optional<Path> optionalRepositoryStateFilePath = propertiesUtils.getRepositoryStateFile();
 
-    optionalRepositoryStateFile.ifPresent(
-        file -> loadRepositoriesFromFile(repositoryContext, file));
+    optionalRepositoryStateFilePath.ifPresent(
+        filePath -> loadRepositoriesFromFile(repositoryContext, filePath));
 
     return new AppContext(repositoryContext, propertiesUtils);
   }
 
   public void onEnd() {
-    Optional<File> optionalRepositoryStateFile = propertiesUtils.getRepositoryStateFile();
-    optionalRepositoryStateFile.ifPresent(file -> repositoryContext.saveToFile(file.getPath()));
+    Optional<Path> optionalRepositoryStateFilePath = propertiesUtils.getRepositoryStateFile();
+    optionalRepositoryStateFilePath.ifPresent(filePath -> repositoryContext.saveToFile(filePath));
   }
 
-  private static void loadRepositoriesFromFile(RepositoryContext repositoryContext, File repositoryStateFile) {
-    if (repositoryStateFile.exists()) {
-      repositoryContext.loadFromFile(repositoryStateFile.getPath());
+  private static void loadRepositoriesFromFile(
+      RepositoryContext repositoryContext,
+      Path repositoryStateFilePath
+  ) {
+    if (Files.exists(repositoryStateFilePath)) {
+      repositoryContext.loadFromFile(repositoryStateFilePath);
     } else {
       try {
-        Files.createFile(repositoryStateFile.toPath());
+        Files.createFile(repositoryStateFilePath);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

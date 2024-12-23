@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,9 +21,9 @@ public class RepositoryContext {
     return (Repository<T, ID>) repositoryMap.get(repositoryClass);
   }
 
-  public void saveToFile(String filePath) {
+  public void saveToFile(Path filePath) {
     try (ObjectOutputStream oos =
-        new ObjectOutputStream(Files.newOutputStream(Paths.get(filePath)))) {
+        new ObjectOutputStream(Files.newOutputStream(filePath))) {
       oos.writeObject(repositoryMap);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -31,9 +31,9 @@ public class RepositoryContext {
   }
 
   @SuppressWarnings("unchecked")
-  public void loadFromFile(String filePath) {
+  public void loadFromFile(Path filePath) {
     try (ObjectInputStream ois =
-        new ObjectInputStream(Files.newInputStream(Paths.get(filePath)))) {
+        new ObjectInputStream(Files.newInputStream(filePath))) {
       Map<Class<?>, Repository<?, ?>> loadedRepositories = (Map<Class<?>, Repository<?, ?>>) ois.readObject();
       repositoryMap.clear();
       repositoryMap.putAll(loadedRepositories);
