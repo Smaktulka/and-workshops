@@ -55,7 +55,7 @@ public class AppContext {
       try {
         Files.createFile(repositoryStateFilePath);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new IllegalArgumentException("Cannot create file " + repositoryStateFilePath, e);
       }
     }
   }

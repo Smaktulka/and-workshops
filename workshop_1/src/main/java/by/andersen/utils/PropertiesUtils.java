@@ -1,6 +1,7 @@
 package by.andersen.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -20,10 +21,10 @@ public class PropertiesUtils {
   public static PropertiesUtils loadAppPropertiesFile() {
     Properties properties = new Properties();
     Path appPropertiesFile = getAppPropertiesFile();
-    try {
-      properties.load(Files.newInputStream(appPropertiesFile));
+    try (InputStream inStream = Files.newInputStream(appPropertiesFile)) {
+      properties.load(inStream);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new IllegalArgumentException("Cannot read properties file", e);
     }
 
     return new PropertiesUtils(properties);
@@ -53,7 +54,7 @@ public class PropertiesUtils {
     try {
       appPropertiesUri = ClassLoader.getSystemResource(APP_PROPERTIES_FILENAME).toURI();
     } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
+      throw new IllegalArgumentException("Cannot get properties file path", e);
     }
 
     return Paths.get(appPropertiesUri);

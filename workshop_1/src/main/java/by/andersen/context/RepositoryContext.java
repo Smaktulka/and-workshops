@@ -26,7 +26,7 @@ public class RepositoryContext {
         new ObjectOutputStream(Files.newOutputStream(filePath))) {
       oos.writeObject(repositoryMap);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException("Cannot save repositories to file " + filePath, e);
     }
   }
 
@@ -38,7 +38,7 @@ public class RepositoryContext {
       repositoryMap.clear();
       repositoryMap.putAll(loadedRepositories);
     } catch (IOException | ClassNotFoundException e) {
-      throw new RuntimeException(e);
+      throw new IllegalStateException("Cannot read repositories from file " + filePath, e);
     }
   }
 }
