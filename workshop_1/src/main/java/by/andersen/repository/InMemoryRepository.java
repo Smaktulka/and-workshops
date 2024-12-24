@@ -1,6 +1,7 @@
 package by.andersen.repository;
 
 import by.andersen.entity.Identifiable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Optional;
 import lombok.Getter;
 
 @Getter
-public class InMemoryRepository<T, ID> implements Repository<T, ID> {
+public class InMemoryRepository<T extends Serializable, ID> implements Repository<T, ID>, Serializable {
   private final Map<ID, T> idEntityMap = new HashMap<>();
   private volatile ID lastId;
 

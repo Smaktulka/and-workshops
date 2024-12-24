@@ -1,5 +1,6 @@
 package by.andersen.utils;
 
+import by.andersen.exception.DtoScanException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -45,7 +46,7 @@ public class DtoScanner {
       }
     } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
              NoSuchMethodException e) {
-      throw new RuntimeException(e);
+      throw new DtoScanException(e);
     } catch (IllegalArgumentException | DateTimeException e) {
       System.out.println("Invalid input!");
       return Optional.empty();
