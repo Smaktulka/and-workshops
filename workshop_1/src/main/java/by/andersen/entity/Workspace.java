@@ -2,6 +2,7 @@ package by.andersen.entity;
 
 import by.andersen.dto.WorkspaceDto;
 import by.andersen.enums.WorkspaceType;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class Workspace implements Identifiable<Long> {
+public class Workspace implements Identifiable<Long>, Serializable {
   private Long id;
   private String name;
   private WorkspaceType type;
