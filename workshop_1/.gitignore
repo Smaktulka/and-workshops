@@ -37,3 +37,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Gradle ###
+.gradle
+/build/
+/gradle/
+gradlew
+gradlew.bat
