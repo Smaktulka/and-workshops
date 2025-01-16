@@ -16,7 +16,6 @@ public class WorkspaceService {
   private final WorkspaceRepository workspaceRepository;
   private final ReservationRepository reservationRepository;
 
-
   public WorkspaceService(
       WorkspaceRepository workspaceRepository,
       ReservationRepository reservationRepository
@@ -44,11 +43,12 @@ public class WorkspaceService {
 
   public Result<String> removeWorkspaceById(Long id) {
     Optional<Workspace> optionalWorkspace = workspaceRepository.findById(id);
-    if (!optionalWorkspace.isPresent()) {
+    if (optionalWorkspace.isEmpty()) {
       return Result.error("Workspace not found");
     }
 
     workspaceRepository.delete(id);
+
     return Result.ok("Workspace is deleted");
   }
 
@@ -59,6 +59,7 @@ public class WorkspaceService {
         .filter(workspace -> {
           List<Reservation> reservationsOnPeriod = reservationRepository
               .getReservationByWorkspaceIdAndPeriod(workspace.getId(), periodDto);
+
           return reservationsOnPeriod.isEmpty();
         })
         .collect(Collectors.toCollection(ArrayList::new));

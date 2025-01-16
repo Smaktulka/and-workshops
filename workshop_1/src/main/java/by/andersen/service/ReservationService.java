@@ -34,7 +34,7 @@ public class ReservationService {
 
   public Result<String> cancelReservation(Long userId, Long reservationId) {
     Optional<Reservation> optionalReservation = reservationRepository.findById(reservationId);
-    if (!optionalReservation.isPresent()) {
+    if (optionalReservation.isEmpty()) {
       return Result.error("Cannot find reservation");
     }
 
@@ -49,7 +49,7 @@ public class ReservationService {
 
   public Result<Reservation> makeReservation(Long userId, ReservationDto reservationDto) {
     Optional<Workspace> optionalWorkspace = workspaceRepository.findById(reservationDto.getWorkspaceId());
-    if (!optionalWorkspace.isPresent()) {
+    if (optionalWorkspace.isEmpty()) {
       return Result.error("Workspace not found");
     }
 
