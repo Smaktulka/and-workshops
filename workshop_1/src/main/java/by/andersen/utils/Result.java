@@ -15,6 +15,7 @@ public class Result<T> {
   public boolean isEmpty() {
     return resultValue == null;
   }
+
   public static <T> Result<T> error(String errorMessage) {
     return new Result<>(null, errorMessage);
   }
