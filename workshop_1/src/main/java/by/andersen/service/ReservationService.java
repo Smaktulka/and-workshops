@@ -76,7 +76,7 @@ public class ReservationService {
     return Result.ok(reservation);
   }
 
-  private boolean isWorkspaceAvailable(Long workspaceId, PeriodDto periodDto) {
+  public boolean isWorkspaceAvailable(Long workspaceId, PeriodDto periodDto) {
     List<Reservation> reservationsOnPeriod = reservationRepository
         .getReservationByWorkspaceIdAndPeriod(workspaceId, periodDto);
     return reservationsOnPeriod.isEmpty();
