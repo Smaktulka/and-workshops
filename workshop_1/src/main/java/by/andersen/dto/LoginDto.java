@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class LoginDto {
   private String userName;
   private char[] password;

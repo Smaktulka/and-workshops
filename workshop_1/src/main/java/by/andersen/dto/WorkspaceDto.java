@@ -7,7 +7,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class WorkspaceDto {
   private String name;
   private WorkspaceType type;

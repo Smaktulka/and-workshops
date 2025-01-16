@@ -6,7 +6,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class ReservationDto {
   private Long workspaceId;
   private LocalDate startTime;
