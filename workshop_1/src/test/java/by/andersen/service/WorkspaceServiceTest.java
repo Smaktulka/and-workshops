@@ -39,10 +39,7 @@ public class WorkspaceServiceTest {
   @Test
   public void givenWorkspaceDto_whenAddWorkspace_thenReturnSuccessMessage() {
     WorkspaceDto workspaceDto = workspaceDto();
-    Workspace workspace = new Workspace(1L, workspaceDto);
-
-    when(workspaceRepository.getLastId())
-        .thenReturn(0L);
+    Workspace workspace = new Workspace(workspaceDto);
 
     doNothing().when(workspaceRepository).save(workspace);
 
