@@ -64,19 +64,18 @@ public class CustomerLoop {
     Scanner inputReader = new Scanner(System.in);
     if (customerLoopCommand == CustomerLoopCommand.SHOW_SPACES) {
       Optional<PeriodDto> optionalPeriodDto = DtoScanner.scan(PeriodDto.class);
-      if (optionalPeriodDto.isPresent() && !optionalPeriodDto.get().isValid()) {
-        System.out.println("Date is invalid! (start date is after end date)");
-      } else {
-        optionalPeriodDto.ifPresent(this::showAvailableWorkspaces);
-      }
+
+      optionalPeriodDto.ifPresent(this::showAvailableWorkspaces);
     } else if (customerLoopCommand == CustomerLoopCommand.MAKE_RESERVATION) {
       Optional<ReservationDto> reservationDto = DtoScanner.scan(ReservationDto.class);
+
       reservationDto.ifPresent(dto -> this.makeReservation(customerId, dto));
     } else if (customerLoopCommand == CustomerLoopCommand.VIEW_RESERVATIONS) {
       showCustomerReservations(customerId);
     } else if (customerLoopCommand == CustomerLoopCommand.CANCEL_RESERVATION) {
       System.out.print("id: ");
       Long reservationId = inputReader.nextLong();
+
       cancelReservation(customerId, reservationId);
     }
   }

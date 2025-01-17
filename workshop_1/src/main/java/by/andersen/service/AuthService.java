@@ -16,7 +16,7 @@ public class AuthService {
 
   public Result<User> login(LoginDto loginDto) {
     Optional<User> optionalUser = userRepository.getByName(loginDto.getUserName());
-    if (!optionalUser.isPresent()) {
+    if (optionalUser.isEmpty()) {
       return Result.error("User with name " + loginDto.getUserName() + " is not found");
     }
 

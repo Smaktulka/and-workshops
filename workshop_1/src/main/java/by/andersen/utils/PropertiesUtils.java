@@ -15,12 +15,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertiesUtils {
   private Properties properties;
-  private static final String APP_PROPERTIES_FILENAME = "app.properties";
-  private static final String REPOSITORY_STATE_FILEPATH = "repository.state.filepath";
 
-  public static PropertiesUtils loadAppPropertiesFile() {
+  public static PropertiesUtils loadAppPropertiesFile(String appPropertiesFileName) {
     Properties properties = new Properties();
-    Path appPropertiesFile = getAppPropertiesFile();
+    Path appPropertiesFile = getAppPropertiesFilePath(appPropertiesFileName);
     try (InputStream inStream = Files.newInputStream(appPropertiesFile)) {
       properties.load(inStream);
     } catch (IOException e) {
@@ -30,8 +28,8 @@ public class PropertiesUtils {
     return new PropertiesUtils(properties);
   }
 
-  public Optional<Path> getRepositoryStateFile() {
-    if (properties.getProperty(REPOSITORY_STATE_FILEPATH) == null) {
+  public Optional<Path> getRepositoryStateFilePath() {
+    if (properties.getProperty(PropertyName.REPOSITORY_STATE_FILEPATH) == null) {
       return Optional.empty();
     }
 
@@ -44,19 +42,23 @@ public class PropertiesUtils {
 
     Path resourcesPath = Paths.get(resourcesUri);
     Path repositoryStateFilePath =
-        Paths.get(resourcesPath.toString(), properties.getProperty(REPOSITORY_STATE_FILEPATH));
+        Paths.get(resourcesPath.toString(), properties.getProperty(PropertyName.REPOSITORY_STATE_FILEPATH));
 
     return Optional.of(repositoryStateFilePath);
   }
 
-  private static Path getAppPropertiesFile() {
+  private static Path getAppPropertiesFilePath(String appPropertiesFileName) {
     URI appPropertiesUri;
     try {
-      appPropertiesUri = ClassLoader.getSystemResource(APP_PROPERTIES_FILENAME).toURI();
+      appPropertiesUri = ClassLoader.getSystemResource(appPropertiesFileName).toURI();
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException("Cannot get properties file path", e);
     }
 
     return Paths.get(appPropertiesUri);
+  }
+
+  public static class PropertyName {
+    public static final String REPOSITORY_STATE_FILEPATH = "repository.state.filepath";
   }
 }

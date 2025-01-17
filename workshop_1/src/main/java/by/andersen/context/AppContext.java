@@ -30,9 +30,9 @@ public class AppContext {
     repositoryContext.putRepository(reservationRepository);
     repositoryContext.putRepository(workspaceRepository);
 
-    PropertiesUtils propertiesUtils = PropertiesUtils.loadAppPropertiesFile();
+    PropertiesUtils propertiesUtils = PropertiesUtils.loadAppPropertiesFile("app.properties");
 
-    Optional<Path> optionalRepositoryStateFilePath = propertiesUtils.getRepositoryStateFile();
+    Optional<Path> optionalRepositoryStateFilePath = propertiesUtils.getRepositoryStateFilePath();
 
     optionalRepositoryStateFilePath.ifPresent(
         filePath -> loadRepositoriesFromFile(repositoryContext, filePath));
@@ -41,7 +41,7 @@ public class AppContext {
   }
 
   public void onEnd() {
-    Optional<Path> optionalRepositoryStateFilePath = propertiesUtils.getRepositoryStateFile();
+    Optional<Path> optionalRepositoryStateFilePath = propertiesUtils.getRepositoryStateFilePath();
     optionalRepositoryStateFilePath.ifPresent(filePath -> repositoryContext.saveToFile(filePath));
   }
 
