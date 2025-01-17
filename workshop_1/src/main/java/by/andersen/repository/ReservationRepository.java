@@ -6,8 +6,19 @@ import by.andersen.utils.PeriodUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
 
-public class ReservationRepository extends InMemoryRepository<Reservation, Long> {
+public class ReservationRepository extends JdbcRepository<Reservation, Long> {
+
+  public ReservationRepository(
+      DataSource dataSource,
+      String currentSchema,
+      String tableName,
+      Class<Reservation> entityClass
+  ) {
+    super(dataSource, currentSchema, tableName, entityClass);
+  }
+
   public List<Reservation> getReservationsByOwnerId(Long ownerId) {
     List<Reservation> reservations = this.findAll();
     return reservations.stream()
