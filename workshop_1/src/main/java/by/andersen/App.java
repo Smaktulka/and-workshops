@@ -10,7 +10,6 @@ import by.andersen.loops.StartLoop;
 public class App {
   public static void main( String[] args ) {
     AppContext appContext = AppContext.init();
-    Runtime.getRuntime().addShutdownHook(new Thread(appContext::onEnd));
 
     new StartLoop(appContext).run();
   }
