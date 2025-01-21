@@ -58,13 +58,8 @@ public class ReservationService {
       return Result.error("Cannot create reservation on specified date");
     }
 
-    Long lastId = reservationRepository.getLastId();
-    if (lastId == null) {
-      lastId = 0L;
-    }
-
     Reservation reservation = Reservation.builder()
-        .id(lastId + 1)
+        .id(0L)
         .ownerId(userId)
         .workspaceId(reservationDto.getWorkspaceId())
         .startTime(reservationDto.getStartTime())

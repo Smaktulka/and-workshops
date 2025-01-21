@@ -122,9 +122,6 @@ public class ReservationServiceTest {
     doReturn(true).when(reservationService)
         .isWorkspaceAvailable(userId, reservationDto.getPeriod());
 
-    when(reservationRepository.getLastId())
-        .thenReturn(0L);
-
     Result<Reservation> result = reservationService.makeReservation(userId, reservationDto);
 
     Assertions.assertNotNull(result.getResultValue());

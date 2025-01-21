@@ -25,12 +25,7 @@ public class WorkspaceService {
   }
 
   public Result<String> addWorkspace(WorkspaceDto workspaceDto) {
-    Long lastId = workspaceRepository.getLastId();
-    if (lastId == null) {
-      lastId = 0L;
-    }
-
-    Workspace workspace = new Workspace(lastId + 1, workspaceDto);
+    Workspace workspace = new Workspace(workspaceDto);
     workspaceRepository.save(workspace);
 
     return Result.ok("Workspace is added");

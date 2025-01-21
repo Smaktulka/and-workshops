@@ -29,22 +29,36 @@ public class PropertiesUtils {
   }
 
   public Optional<Path> getRepositoryStateFilePath() {
-    if (properties.getProperty(PropertyName.REPOSITORY_STATE_FILEPATH) == null) {
+    Optional<String> propertyOpt = getProperty(PropertyName.REPOSITORY_STATE_FILEPATH);
+
+    if (propertyOpt.isEmpty()) {
       return Optional.empty();
     }
 
-    URI resourcesUri;
+    URI resourcesUri = getResourceUri();
+    Path resourcesPath = Paths.get(resourcesUri);
+    Path repositoryStateFilePath =
+        Paths.get(resourcesPath.toString(), propertyOpt.get());
+
+    return Optional.of(repositoryStateFilePath);
+  }
+
+  public Optional<String> getProperty(String propertyName) {
+    String property = properties.getProperty(propertyName);
+
+    if (property == null) {
+      return Optional.empty();
+    }
+
+    return Optional.of(property);
+  }
+
+  private URI getResourceUri() {
     try {
-      resourcesUri = ClassLoader.getSystemResource("").toURI();
+      return ClassLoader.getSystemResource("").toURI();
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
-
-    Path resourcesPath = Paths.get(resourcesUri);
-    Path repositoryStateFilePath =
-        Paths.get(resourcesPath.toString(), properties.getProperty(PropertyName.REPOSITORY_STATE_FILEPATH));
-
-    return Optional.of(repositoryStateFilePath);
   }
 
   private static Path getAppPropertiesFilePath(String appPropertiesFileName) {
@@ -60,5 +74,9 @@ public class PropertiesUtils {
 
   public static class PropertyName {
     public static final String REPOSITORY_STATE_FILEPATH = "repository.state.filepath";
+    public static final String SQL_DB_URL = "sql.db.url";
+    public static final String SQL_DB_USERNAME = "sql.db.username";
+    public static final String SQL_DB_PASSWORD = "sql.db.password";
+    public static final String SQL_DB_SCHEMA = "sql.db.schema";
   }
 }
