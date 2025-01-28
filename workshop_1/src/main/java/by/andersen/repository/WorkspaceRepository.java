@@ -1,16 +1,14 @@
 package by.andersen.repository;
 
 import by.andersen.entity.Workspace;
-import javax.sql.DataSource;
+import org.hibernate.SessionFactory;
 
-public class WorkspaceRepository extends JdbcRepository<Workspace, Long> {
+public class WorkspaceRepository extends HibernateRepository<Workspace, Long> {
 
   public WorkspaceRepository(
-      DataSource dataSource,
-      String currentSchema,
-      String tableName,
+      SessionFactory sessionFactory,
       Class<Workspace> entityClass
   ) {
-    super(dataSource, currentSchema, tableName, entityClass);
+    super(sessionFactory, entityClass);
   }
 }
