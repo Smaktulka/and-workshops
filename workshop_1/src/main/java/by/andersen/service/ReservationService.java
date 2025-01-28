@@ -3,6 +3,7 @@ package by.andersen.service;
 import by.andersen.dto.ReservationDto;
 import by.andersen.dto.PeriodDto;
 import by.andersen.entity.Reservation;
+import by.andersen.entity.User;
 import by.andersen.entity.Workspace;
 import by.andersen.repository.ReservationRepository;
 import by.andersen.repository.WorkspaceRepository;
@@ -38,7 +39,7 @@ public class ReservationService {
       return Result.error("Cannot find reservation");
     }
 
-    if (!optionalReservation.get().getOwnerId().equals(userId)) {
+    if (!optionalReservation.get().getOwner().getId().equals(userId)) {
       return Result.error("Cannot cancel someone's else reservation");
     }
 
@@ -60,8 +61,8 @@ public class ReservationService {
 
     Reservation reservation = Reservation.builder()
         .id(0L)
-        .ownerId(userId)
-        .workspaceId(reservationDto.getWorkspaceId())
+        .owner(new User(userId))
+        .workspace(workspace)
         .startTime(reservationDto.getStartTime())
         .endTime(reservationDto.getEndTime())
         .build();
