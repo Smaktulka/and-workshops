@@ -17,21 +17,21 @@ import by.andersen.utils.Result;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class CustomerLoop {
   private final WorkspaceService workspaceService;
   private final ReservationService reservationService;
 
-  public CustomerLoop(AppContext appContext) {
-    WorkspaceRepository workspaceRepository = (WorkspaceRepository) appContext
-        .getRepositoryContext()
-        .getRepository(WorkspaceRepository.class);
-    ReservationRepository reservationRepository = (ReservationRepository) appContext
-        .getRepositoryContext()
-        .getRepository(ReservationRepository.class);
-    this.workspaceService = new WorkspaceService(workspaceRepository, reservationRepository);
-    this.reservationService =
-        new ReservationService(reservationRepository, workspaceRepository);
+  @Autowired
+  public CustomerLoop(
+      WorkspaceService workspaceService,
+      ReservationService reservationService
+  ) {
+    this.workspaceService = workspaceService;
+    this.reservationService = reservationService;
   }
 
   public void run(User customer) {

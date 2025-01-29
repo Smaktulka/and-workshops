@@ -16,24 +16,25 @@ import by.andersen.utils.Result;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class AdminLoop {
   private final WorkspaceService workspaceService;
   private final ReservationService reservationService;
   private final String WORKSPACES = "workspaces";
   private final String RESERVATIONS = "reservations";
 
-  public AdminLoop(AppContext appContext) {
-    WorkspaceRepository workspaceRepository = (WorkspaceRepository) appContext
-        .getRepositoryContext()
-        .getRepository(WorkspaceRepository.class);
-    ReservationRepository reservationRepository = (ReservationRepository) appContext
-        .getRepositoryContext()
-        .getRepository(ReservationRepository.class);
-    this.workspaceService = new WorkspaceService(workspaceRepository, reservationRepository);
-    this.reservationService =
-        new ReservationService(reservationRepository, workspaceRepository);
+  @Autowired
+  public AdminLoop(
+      WorkspaceService workspaceService,
+      ReservationService reservationService
+  ) {
+    this.workspaceService = workspaceService;
+    this.reservationService = reservationService;
   }
+
 
   public void run(User admin) {
     System.out.println("You are in admin menu");

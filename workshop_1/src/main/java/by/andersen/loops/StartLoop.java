@@ -10,16 +10,24 @@ import by.andersen.utils.CommandPrinter;
 import by.andersen.utils.ConsolePasswordUtils;
 import by.andersen.utils.Result;
 import java.util.Scanner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class StartLoop {
-  private final AppContext appContext;
   private final AuthService authService;
+  private final AdminLoop adminLoop;
+  private final CustomerLoop customerLoop;
 
-  public StartLoop(AppContext appContext) {
-    this.appContext = appContext;
-    UserRepository userRepository =
-        (UserRepository) appContext.getRepositoryContext().getRepository(UserRepository.class);
-    this.authService = new AuthService(userRepository);
+  @Autowired
+  public StartLoop(
+      AuthService authService,
+      AdminLoop adminLoop,
+      CustomerLoop customerLoop
+  ) {
+    this.authService = authService;
+    this.adminLoop = adminLoop;
+    this.customerLoop = customerLoop;
   }
 
   public void run() {
@@ -57,10 +65,10 @@ public class StartLoop {
         User user = result.getResultValue();
         switch (user.getRole()) {
           case CUSTOMER:
-            new CustomerLoop(appContext).run(user);
+            customerLoop.run(user);
             break;
           case ADMIN:
-            new AdminLoop(appContext).run(user);
+            adminLoop.run(user);
         }
       }
     }
