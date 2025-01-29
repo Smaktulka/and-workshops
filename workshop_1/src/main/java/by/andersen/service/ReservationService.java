@@ -10,11 +10,15 @@ import by.andersen.repository.WorkspaceRepository;
 import by.andersen.utils.Result;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ReservationService {
   private final ReservationRepository reservationRepository;
   private final WorkspaceRepository workspaceRepository;
 
+  @Autowired
   public ReservationService(
       ReservationRepository reservationRepository,
       WorkspaceRepository workspaceRepository
