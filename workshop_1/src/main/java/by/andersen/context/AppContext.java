@@ -16,6 +16,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.postgresql.ds.PGSimpleDataSource;
 
 @Getter
@@ -28,26 +30,13 @@ public class AppContext {
   public static AppContext init() {
     RepositoryContext repositoryContext = new RepositoryContext();
 
-    PGSimpleDataSource dataSource = new PGSimpleDataSource();
 
     PropertiesUtils propertiesUtils = PropertiesUtils.loadAppPropertiesFile("app.properties");
-    propertiesUtils.getProperty(PropertyName.SQL_DB_URL)
-        .ifPresent(dataSource::setUrl);
-    propertiesUtils.getProperty(PropertyName.SQL_DB_USERNAME)
-        .ifPresent(dataSource::setUser);
-    propertiesUtils.getProperty(PropertyName.SQL_DB_PASSWORD)
-        .ifPresent(dataSource::setPassword);
-    propertiesUtils.getProperty(PropertyName.SQL_DB_SCHEMA)
-        .ifPresent(dataSource::setCurrentSchema);
+    SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
 
-    String currentSchema = propertiesUtils.getProperty(PropertyName.SQL_DB_SCHEMA)
-        .orElse("public");
-    UserRepository userRepository =
-        new UserRepository(dataSource, currentSchema, "user", User.class);
-    ReservationRepository reservationRepository =
-        new ReservationRepository(dataSource, currentSchema,"reservation", Reservation.class);
-    WorkspaceRepository workspaceRepository =
-        new WorkspaceRepository(dataSource, currentSchema,"workspace", Workspace.class);
+    UserRepository userRepository = new UserRepository(sessionFactory, User.class);
+    ReservationRepository reservationRepository = new ReservationRepository(sessionFactory, Reservation.class);
+    WorkspaceRepository workspaceRepository = new WorkspaceRepository(sessionFactory, Workspace.class);
 
     repositoryContext.putRepository(userRepository);
     repositoryContext.putRepository(reservationRepository);
@@ -83,5 +72,20 @@ public class AppContext {
         throw new IllegalArgumentException("Cannot create file " + repositoryStateFilePath, e);
       }
     }
+  }
+
+  private static PGSimpleDataSource generateDataSource(PropertiesUtils propertiesUtils) {
+    PGSimpleDataSource dataSource = new PGSimpleDataSource();
+    propertiesUtils.getProperty(PropertyName.SQL_DB_URL)
+        .ifPresent(dataSource::setUrl);
+    propertiesUtils.getProperty(PropertyName.SQL_DB_USERNAME)
+        .ifPresent(dataSource::setUser);
+    propertiesUtils.getProperty(PropertyName.SQL_DB_PASSWORD)
+        .ifPresent(dataSource::setPassword);
+    propertiesUtils.getProperty(PropertyName.SQL_DB_SCHEMA)
+        .ifPresent(dataSource::setCurrentSchema);
+
+
+    return dataSource;
   }
 }

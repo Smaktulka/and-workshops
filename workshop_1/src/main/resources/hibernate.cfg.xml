@@ -1,0 +1,15 @@
+<hibernate-configuration>
+  <session-factory>
+    <!-- Database connection settings -->
+    <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+    <property name="hibernate.connection.url">jdbc:postgresql://localhost:6543/coworking</property>
+    <property name="hibernate.connection.username">postgres</property>
+    <property name="hibernate.connection.password">password</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.hbm2ddl.auto">update</property>
+    <mapping class="by.andersen.entity.User"/>
+    <mapping class="by.andersen.entity.Reservation"/>
+    <mapping class="by.andersen.entity.Workspace"/>
+  </session-factory>
+</hibernate-configuration>

@@ -1,6 +1,5 @@
 package by.andersen.service;
 
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import by.andersen.dto.LoginDto;

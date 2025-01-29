@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import by.andersen.dto.ReservationDto;
 import by.andersen.entity.Reservation;
+import by.andersen.entity.User;
 import by.andersen.entity.Workspace;
 import by.andersen.enums.WorkspaceType;
 import by.andersen.repository.ReservationRepository;
@@ -100,7 +101,7 @@ public class ReservationServiceTest {
     when(reservationRepository.findById(reservationId))
         .thenReturn(Optional.of(reservation()));
 
-    Assertions.assertNotEquals(userId, reservation().getOwnerId());
+    Assertions.assertNotEquals(userId, reservation().getOwner().getId());
 
     Result<String> result = reservationService.cancelReservation(userId, reservationId);
 
@@ -167,8 +168,8 @@ public class ReservationServiceTest {
         .id(1L)
         .startTime(LocalDate.parse("2024-01-01"))
         .endTime(LocalDate.parse("2024-01-02"))
-        .ownerId(1L)
-        .workspaceId(1L)
+        .owner(new User(1L))
+        .workspace(new Workspace(1L))
         .build();
   }
 
