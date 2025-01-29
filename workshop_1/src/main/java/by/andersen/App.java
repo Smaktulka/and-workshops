@@ -1,16 +1,27 @@
 package by.andersen;
 
-import by.andersen.context.AppContext;
 import by.andersen.loops.StartLoop;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Hello world!
  *
  */
-public class App {
-  public static void main( String[] args ) {
-    AppContext appContext = AppContext.init();
+@SpringBootApplication
+public class App implements CommandLineRunner {
+  @Autowired
+  private StartLoop startLoop;
 
-    new StartLoop(appContext).run();
+  public static void main(String[] args) {
+    SpringApplication.run(App.class, args);
+  }
+
+  @Override
+  public void run(String... args) throws Exception {
+    System.out.println("Hi! This is Spring Cli");
+    startLoop.run();
   }
 }
