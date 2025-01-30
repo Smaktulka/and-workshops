@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Admin Page</title>
+</head>
+<body>
+<h1>Admin Page</h1>
+<p>Welcome, Admin!</p>
+<nav>
+  <ul>
+    <li><a th:href="@{/admin}">Admin Menu</a></li>
+    <li><a th:href="@{/workspace}">Show All Workspaces</a></li>
+    <li><a th:href="@{/reservation}">Show All Reservations</a></li>
+  </ul>
+</nav>
+</body>
+</html>
