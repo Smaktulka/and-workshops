@@ -11,11 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class WorkspaceService {
   private final WorkspaceRepository workspaceRepository;
   private final ReservationRepository reservationRepository;
 
+  @Autowired
   public WorkspaceService(
       WorkspaceRepository workspaceRepository,
       ReservationRepository reservationRepository

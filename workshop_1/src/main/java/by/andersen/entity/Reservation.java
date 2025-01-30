@@ -31,7 +31,7 @@ public class Reservation implements Identifiable<Long>, Serializable {
   private User owner;
 
   @ManyToOne
-  @JoinColumn(name = "ownerId")
+  @JoinColumn(name = "workspaceId")
   private Workspace workspace;
 
   private LocalDate startTime;

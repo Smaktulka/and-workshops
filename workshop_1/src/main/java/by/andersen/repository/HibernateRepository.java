@@ -17,7 +17,6 @@ public class HibernateRepository<T extends Serializable, ID> implements Reposito
     this.entityClass = entityClass;
   }
 
-
   @Override
   public void save(T entity) {
     Transaction transaction = null;

@@ -6,10 +6,14 @@ import by.andersen.repository.UserRepository;
 import by.andersen.utils.PasswordHashUtils;
 import by.andersen.utils.Result;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthService {
   private final UserRepository userRepository;
 
+  @Autowired
   public AuthService(UserRepository userRepository) {
     this.userRepository = userRepository;
   }

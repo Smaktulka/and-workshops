@@ -34,9 +34,9 @@ public class AppContext {
     PropertiesUtils propertiesUtils = PropertiesUtils.loadAppPropertiesFile("app.properties");
     SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
 
-    UserRepository userRepository = new UserRepository(sessionFactory, User.class);
-    ReservationRepository reservationRepository = new ReservationRepository(sessionFactory, Reservation.class);
-    WorkspaceRepository workspaceRepository = new WorkspaceRepository(sessionFactory, Workspace.class);
+    UserRepository userRepository = new UserRepository(sessionFactory);
+    ReservationRepository reservationRepository = new ReservationRepository(sessionFactory);
+    WorkspaceRepository workspaceRepository = new WorkspaceRepository(sessionFactory);
 
     repositoryContext.putRepository(userRepository);
     repositoryContext.putRepository(reservationRepository);

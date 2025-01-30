@@ -1,16 +1,30 @@
 package by.andersen;
 
-import by.andersen.context.AppContext;
+import by.andersen.config.AppConfig;
 import by.andersen.loops.StartLoop;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Hello world!
  *
  */
+@Configuration
 public class App {
-  public static void main( String[] args ) {
-    AppContext appContext = AppContext.init();
+  @Autowired
+  private StartLoop startLoop;
 
-    new StartLoop(appContext).run();
+  public static void main(String[] args) {
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+    App app = context.getBean(App.class);
+    app.start();
+
+    context.close();
+  }
+
+  public void start() {
+    startLoop.run();
   }
 }
