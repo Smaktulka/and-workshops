@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Manage Workspaces</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>
+  <h1>Workspaces</h1>
+  <nav>
+    <ul>
+      <li><a th:href="@{/admin}">Admin Menu</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <table>
+    <thead>
+    <tr>
+      <th>Workspace Name</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="workspace : ${workspaces}">
+      <td th:text="${workspace.name}"></td>
+      <td th:text="${workspace.type}"></td>
+      <td th:text="${workspace.price}"></td>
+      <td>
+        <form action="#" th:action="@{/workspace/remove}" method="post">
+          <input type="hidden" name="workspaceId" th:value="${workspace.id}"/>
+          <button type="submit">Remove</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

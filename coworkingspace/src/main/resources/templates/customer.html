@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Customer Page</title>
+  <link rel="stylesheet" href="/styles.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+<header>
+  <h1>Customer Menu</h1>
+  <nav>
+    <ul>
+      <li><a th:href="@{/workspaces}">Show Available Workspaces</a></li>
+      <li><a th:href="@{/reservation/make}">Make Reservation</a></li>
+      <li><a th:href="@{/reservation/show}">Show Reservations</a></li>
+      <li><a th:href="@{/reservation/cancel}">Cancel Reservation</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <h2>Welcome, <span th:text="${user.name}">User</span>!</h2>
+  <p>This is your user dashboard.</p>
+</main>
+</body>
+</html>
