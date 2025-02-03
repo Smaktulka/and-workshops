@@ -1,22 +1,21 @@
 package by.andersen.coworkingspace.controller;
 
-import by.andersen.coworkingspace.dto.PeriodDto;
 import by.andersen.coworkingspace.dto.ReservationDto;
 import by.andersen.coworkingspace.entity.Reservation;
-import by.andersen.coworkingspace.entity.User;
-import by.andersen.coworkingspace.enums.UserRole;
 import by.andersen.coworkingspace.service.ReservationService;
 import by.andersen.coworkingspace.service.WorkspaceService;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("/reservation")
 public class ReservationController {
   private final ReservationService reservationService;
@@ -32,56 +31,30 @@ public class ReservationController {
   }
 
   @GetMapping
-  public String getReservations(Model model, HttpSession session) {
-    User user = (User) session.getAttribute("user");
-
-    if (!user.getRole().equals(UserRole.ADMIN)) {
-      return "redirect:/customer";
-    }
-
+  public ResponseEntity<List<Reservation>> getReservations() {
     List<Reservation> reservations = reservationService.getReservations();
-    model.addAttribute("reservations", reservations);
-    return "reservations";
+    return ResponseEntity.ok(reservations);
   }
 
-  @GetMapping("/select-period")
-  public String showSelectPeriodPage(Model model) {
-    model.addAttribute("periodDto", new PeriodDto());
-    return "select-period";
+  @GetMapping
+  public ResponseEntity<List<Reservation>> getUserReservations(@RequestParam("userId") Long userId) {
+    List<Reservation> userReservations = reservationService.getUserReservations(userId);
+    return ResponseEntity.ok(userReservations);
   }
 
-  @PostMapping("/available-workspaces")
-  public String showAvailableWorkspaces(Model model, PeriodDto periodDto) {
-    model.addAttribute("availableWorkspaces", workspaceService.getAvailableWorkspacesForPeriod(periodDto));
-    model.addAttribute("periodDto", periodDto);
-    model.addAttribute("reservationDto", new ReservationDto());
-    return "make-reservation";
+  @PostMapping("make")
+  public ResponseEntity<Reservation> makeReservation(
+      @RequestParam("userId") Long userId,
+      @RequestBody ReservationDto reservationDto) {
+    Reservation reservation = reservationService.makeReservation(userId, reservationDto);
+    return ResponseEntity.ok(reservation);
   }
 
-  @PostMapping("/make")
-  public String makeReservation(HttpSession session, ReservationDto reservationDto) {
-    User user = (User) session.getAttribute("user");
-    reservationService.makeReservation(user.getId(), reservationDto);
-    return "redirect:/reservation/show";
-  }
-
-  @GetMapping("/show")
-  public String showReservations(Model model, HttpSession session) {
-    User user = (User) session.getAttribute("user");
-    model.addAttribute("reservations", reservationService.getUserReservations(user.getId()));
-    return "show-reservations";
-  }
-
-  @GetMapping("/cancel")
-  public String cancelReservation(Model model, HttpSession session) {
-    User user = (User) session.getAttribute("user");
-    model.addAttribute("reservations", reservationService.getUserReservations(user.getId()));
-    return "cancel-reservation";
-  }
-
-  @PostMapping("/cancel")
-  public String cancelReservationPost(Long userId, Long reservationId) {
+  @DeleteMapping("cancel")
+  public ResponseEntity<String> cancelReservation(
+      @RequestParam("userId") Long userId,
+      @RequestParam("reservationId") Long reservationId) {
     reservationService.cancelReservation(userId, reservationId);
-    return "redirect:/reservation/show";
+    return ResponseEntity.ok("Reservation is canceled");
   }
 }

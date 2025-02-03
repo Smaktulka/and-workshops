@@ -1,17 +1,17 @@
 package by.andersen.coworkingspace.controller;
 
-import by.andersen.coworkingspace.entity.User;
+import by.andersen.coworkingspace.dto.PeriodDto;
 import by.andersen.coworkingspace.entity.Workspace;
-import by.andersen.coworkingspace.enums.UserRole;
 import by.andersen.coworkingspace.service.WorkspaceService;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/workspace")
@@ -24,35 +24,20 @@ public class WorkspaceController {
   }
 
   @GetMapping
-  public String getWorkspaces(Model model, HttpSession session) {
-    User user = (User) session.getAttribute("user");
-
-    if (!user.getRole().equals(UserRole.ADMIN)) {
-      return "redirect:/customer";
-    }
-
+  public ResponseEntity<List<Workspace>> getWorkspaces() {
     List<Workspace> workspaces = workspaceService.getWorkspaces();
-    model.addAttribute("workspaces", workspaces);
-
-    return "workspaces";
+    return ResponseEntity.ok(workspaces);
   }
 
-  @GetMapping("remove")
-  public String showWorkspaceRemovePage(Model model, HttpSession session) {
-    User user = (User) session.getAttribute("user");
-
-    if (!user.getRole().equals(UserRole.ADMIN)) {
-      return "redirect:/customer";
-    }
-
-    List<Workspace> workspaces = workspaceService.getWorkspaces();
-    model.addAttribute("workspaces", workspaces);
-    return "remove-workspace";
-  }
-
-  @PostMapping("remove")
-  public String removeWorkspace(Long workspaceId) {
+  @DeleteMapping("remove")
+  public ResponseEntity<String> removeWorkspace(@RequestParam("workspaceId") Long workspaceId) {
     workspaceService.removeWorkspaceById(workspaceId);
-    return "redirect:/admin";
+    return ResponseEntity.ok("Workspace is removed");
+  }
+
+  @GetMapping("available")
+  public ResponseEntity<List<Workspace>> getAvailableWorkspaces(@RequestBody PeriodDto periodDto) {
+    List<Workspace> availableWorkspaces = workspaceService.getAvailableWorkspacesForPeriod(periodDto);
+    return ResponseEntity.ok(availableWorkspaces);
   }
 }
