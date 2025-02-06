@@ -3,10 +3,10 @@ package by.andersen.coworkingspace.controller;
 import by.andersen.coworkingspace.dto.ReservationDto;
 import by.andersen.coworkingspace.entity.Reservation;
 import by.andersen.coworkingspace.service.ReservationService;
-import by.andersen.coworkingspace.service.WorkspaceService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,24 +19,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/reservation")
 public class ReservationController {
   private final ReservationService reservationService;
-  private final WorkspaceService workspaceService;
 
   @Autowired
   public ReservationController(
-      ReservationService reservationService,
-      WorkspaceService workspaceService
+      ReservationService reservationService
   ) {
     this.reservationService = reservationService;
-    this.workspaceService = workspaceService;
   }
 
   @GetMapping
+  @Secured("ROLE_ADMIN")
   public ResponseEntity<List<Reservation>> getReservations() {
     List<Reservation> reservations = reservationService.getReservations();
     return ResponseEntity.ok(reservations);
   }
 
-  @GetMapping
+  @GetMapping("/user")
   public ResponseEntity<List<Reservation>> getUserReservations(@RequestParam("userId") Long userId) {
     List<Reservation> userReservations = reservationService.getUserReservations(userId);
     return ResponseEntity.ok(userReservations);
