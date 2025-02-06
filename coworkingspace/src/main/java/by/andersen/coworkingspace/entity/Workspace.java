@@ -16,17 +16,16 @@ import java.math.BigDecimal;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Table(name = "workspace", schema = "space")
-@Entity
-@Getter
-@EqualsAndHashCode
-@AllArgsConstructor
-@ToString
+
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "workspace", schema = "space")
 public class Workspace {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
