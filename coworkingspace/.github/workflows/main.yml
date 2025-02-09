@@ -4,7 +4,7 @@ on:
   push:
     branches: [ workshop_14 ]
   pull_request:
-    branches: [ main ]
+    branches: [ workshop_14 ]
 
 jobs:
   build_and_test:
