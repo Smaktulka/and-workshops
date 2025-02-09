@@ -2,7 +2,7 @@ name: Maven CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ workshop_14 ]
   pull_request:
     branches: [ main ]
 
