@@ -11,17 +11,17 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Table(name = "reservation", schema = "space")
-@Entity
-@Getter
-@EqualsAndHashCode
-@AllArgsConstructor
-@ToString
+
+
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "reservation", schema = "space")
 public class Reservation{
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
