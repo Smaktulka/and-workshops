@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
+
   private final UserRepository userRepository;
   private final TokenRepository tokenRepository;
   private final JwtUtils jwtUtils;
@@ -62,18 +63,20 @@ public class AuthService {
     }
 
     TokensDto tokens = jwtUtils.generateTokens(user);
-    deleteUserTokens(user);
+    tokenRepository.deleteByUser(user);
     saveToken(user, tokens.getAccessToken());
 
     return tokens;
   }
 
+  @Transactional
   public TokensDto refreshToken(
       HttpServletRequest request
   ) {
     String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot refresh bearer token without token");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Cannot refresh bearer token without token");
     }
 
     String refreshToken = authHeader.substring(7);
@@ -92,7 +95,7 @@ public class AuthService {
     }
 
     TokensDto tokensDto = jwtUtils.generateTokens(user);
-    deleteUserTokens(user);
+    tokenRepository.deleteByUser(user);
     saveToken(user, tokensDto.getAccessToken());
 
     return tokensDto;
@@ -105,10 +108,5 @@ public class AuthService {
         .build();
 
     tokenRepository.save(token);
-  }
-
-  @Transactional
-  private void deleteUserTokens(User user) {
-    tokenRepository.deleteByUser(user);
   }
 }

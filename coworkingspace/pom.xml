@@ -6,13 +6,13 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>by.andersen</groupId>
 	<artifactId>coworkingspace</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>coworkingspace</name>
-	<description>Coworkingspace project for Spring </description>
+	<description>Coworkingspace project for Spring</description>
 	<url/>
 	<licenses>
 		<license/>

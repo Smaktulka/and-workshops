@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: postgres:15.3-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: coworking
+    ports:
+      - "7432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+  app:
+    depends_on:
+      - postgresdb
+    build: .
+    ports:
+      - "8084:8084"
+    volumes:
+      - ./.m2:/root/.m2
