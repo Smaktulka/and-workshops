@@ -19,7 +19,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
           AND (
                (r.startTime <= :startTime AND r.endTime >= :endTime)
             OR (r.startTime < :endTime AND r.startTime > :startTime)
-            OR (r.endTime > :starTime AND r.endTime < :endTime)
+            OR (r.endTime > :startTime AND r.endTime < :endTime)
           )
       """)
   List<Reservation> getReservationByWorkspaceIdAndPeriodOverlap(
