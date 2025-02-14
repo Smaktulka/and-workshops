@@ -36,7 +36,7 @@ public class User implements UserDetails {
   private UserRole role;
   private String passwordHash;
 
-  @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Reservation> reservations;
 
   public User(Long id) {
