@@ -3,6 +3,8 @@ package by.andersen.coworkingspace.controller;
 import by.andersen.coworkingspace.dto.ReservationDto;
 import by.andersen.coworkingspace.entity.Reservation;
 import by.andersen.coworkingspace.service.ReservationService;
+import by.andersen.coworkingspace.utils.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/reservation")
 public class ReservationController {
   private final ReservationService reservationService;
+  private final JwtUtils jwtUtils;
 
   @Autowired
   public ReservationController(
-      ReservationService reservationService
+      ReservationService reservationService,
+      JwtUtils jwtUtils
   ) {
     this.reservationService = reservationService;
+    this.jwtUtils = jwtUtils;
   }
 
   @GetMapping
@@ -40,19 +45,23 @@ public class ReservationController {
     return ResponseEntity.ok(userReservations);
   }
 
-  @PostMapping("make")
+  @PostMapping("/make")
   public ResponseEntity<Reservation> makeReservation(
-      @RequestParam("userId") Long userId,
+      HttpServletRequest request,
       @RequestBody ReservationDto reservationDto) {
-    Reservation reservation = reservationService.makeReservation(userId, reservationDto);
+    String accessToken = request.getHeader("Authorization").substring(7);
+    String userName = jwtUtils.extractUsername(accessToken);
+    Reservation reservation = reservationService.makeReservation(userName, reservationDto);
     return ResponseEntity.ok(reservation);
   }
 
-  @DeleteMapping("cancel")
+  @DeleteMapping("/cancel")
   public ResponseEntity<String> cancelReservation(
-      @RequestParam("userId") Long userId,
+      HttpServletRequest request,
       @RequestParam("reservationId") Long reservationId) {
-    reservationService.cancelReservation(userId, reservationId);
+    String accessToken = request.getHeader("Authorization").substring(7);
+    String userName = jwtUtils.extractUsername(accessToken);
+    reservationService.cancelReservation(userName, reservationId);
     return ResponseEntity.ok("Reservation is canceled");
   }
 }
