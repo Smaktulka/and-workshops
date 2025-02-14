@@ -37,6 +37,6 @@ public class Workspace {
   private WorkspaceType type;
   private BigDecimal price;
 
-  @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Reservation> reservations;
 }
