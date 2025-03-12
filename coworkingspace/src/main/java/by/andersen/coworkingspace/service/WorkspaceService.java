@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,6 +18,7 @@ public class WorkspaceService {
   private final WorkspaceRepository workspaceRepository;
   private final ReservationRepository reservationRepository;
 
+  @Autowired
   public WorkspaceService(
       WorkspaceRepository workspaceRepository,
       ReservationRepository reservationRepository
@@ -49,7 +51,7 @@ public class WorkspaceService {
   public boolean isWorkspaceAvailableForPeriod(Long workspaceId, PeriodDto periodDto) {
     List<Reservation> reservationsOnPeriod = reservationRepository
         .getReservationByWorkspaceIdAndPeriodOverlap(
-            workspaceId, periodDto.getStartDate(), periodDto.getEndDate());
+            workspaceId, periodDto.getStartTime(), periodDto.getEndTime());
 
     return reservationsOnPeriod.isEmpty();
   }

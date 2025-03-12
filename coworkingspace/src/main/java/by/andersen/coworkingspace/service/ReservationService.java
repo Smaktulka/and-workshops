@@ -6,6 +6,7 @@ import by.andersen.coworkingspace.entity.Reservation;
 import by.andersen.coworkingspace.entity.User;
 import by.andersen.coworkingspace.entity.Workspace;
 import by.andersen.coworkingspace.repository.ReservationRepository;
+import by.andersen.coworkingspace.repository.UserRepository;
 import by.andersen.coworkingspace.repository.WorkspaceRepository;
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +20,17 @@ public class ReservationService {
   private final ReservationRepository reservationRepository;
   private final WorkspaceRepository workspaceRepository;
 
+  private final UserRepository userRepository;
+
   @Autowired
   public ReservationService(
       ReservationRepository reservationRepository,
-      WorkspaceRepository workspaceRepository
+      WorkspaceRepository workspaceRepository,
+      UserRepository userRepository
   ) {
     this.reservationRepository = reservationRepository;
     this.workspaceRepository = workspaceRepository;
+    this.userRepository = userRepository;
   }
 
   public List<Reservation> getReservations() {
@@ -36,30 +41,35 @@ public class ReservationService {
     return reservationRepository.findByOwnerId(userId);
   }
 
-  public void cancelReservation(Long userId, Long reservationId) {
-    Reservation reservation = reservationRepository.getReferenceById(reservationId);
+  public void cancelReservation(String userName, Long reservationId) {
+    Reservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
 
-    if (reservation.getOwner().getId().equals(userId)) {
+    User user = userRepository.findByName(userName).get();
+
+    if (!reservation.getOwner().getId().equals(user.getId())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot cancel someone's else reservation");
     }
 
     reservationRepository.deleteById(reservationId);
   }
 
-  public Reservation makeReservation(Long userId, ReservationDto reservationDto) {
+  public Reservation makeReservation(String userName, ReservationDto reservationDto) {
     Optional<Workspace> optionalWorkspace = workspaceRepository.findById(reservationDto.getWorkspaceId());
     if (optionalWorkspace.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND,  "Workspace not found");
     }
 
     Workspace workspace = optionalWorkspace.get();
-    if (!isWorkspaceAvailable(workspace.getId(), reservationDto.getPeriod())) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot create reservation on specified date");
+    PeriodDto periodDto = new PeriodDto(reservationDto.getStartTime(), reservationDto.getEndTime());
+    if (!isWorkspaceAvailable(workspace.getId(), periodDto)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot create reservation on the specified date");
     }
 
+    User user = userRepository.findByName(userName).get();
+
     Reservation reservation = Reservation.builder()
-        .id(0L)
-        .owner(new User(userId))
+        .owner(user)
         .workspace(workspace)
         .startTime(reservationDto.getStartTime())
         .endTime(reservationDto.getEndTime())
@@ -72,7 +82,7 @@ public class ReservationService {
 
   public boolean isWorkspaceAvailable(Long workspaceId, PeriodDto periodDto) {
     List<Reservation> reservationsOnPeriod = reservationRepository
-        .getReservationByWorkspaceIdAndPeriodOverlap(workspaceId, periodDto.getStartDate(), periodDto.getEndDate());
+        .getReservationByWorkspaceIdAndPeriodOverlap(workspaceId, periodDto.getStartTime(), periodDto.getEndTime());
     return reservationsOnPeriod.isEmpty();
   }
 }

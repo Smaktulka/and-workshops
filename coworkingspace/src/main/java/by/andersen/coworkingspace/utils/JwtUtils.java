@@ -8,13 +8,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JwtUtils {
   private static final String SECRET_KEY = "secret";
-  private static final int JWT_TTL_IN_MINUTES = 15 * 60 * 60 * 1000;
-  private static final int REFRESH_TOKEN_TTL_IN_MINUTES = 15 * 60 * 60 * 1000;
+  private static final int JWT_TTL_IN_MINUTES = 5;
+  private static final int REFRESH_TOKEN_TTL_IN_MINUTES = 120;
 
   public TokensDto generateTokens(User user) {
     Map<String, Object> claims = new HashMap<>();
@@ -30,7 +31,7 @@ public class JwtUtils {
         .setClaims(claims)
         .setSubject(user.getName())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + JWT_TTL_IN_MINUTES))
+        .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(JWT_TTL_IN_MINUTES)))
         .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
         .compact();
   }
@@ -40,7 +41,7 @@ public class JwtUtils {
         .setClaims(claims)
         .setSubject(user.getName())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_TTL_IN_MINUTES))
+        .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(REFRESH_TOKEN_TTL_IN_MINUTES)))
         .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
         .compact();
   }

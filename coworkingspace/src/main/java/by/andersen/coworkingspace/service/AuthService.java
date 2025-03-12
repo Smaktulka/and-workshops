@@ -3,15 +3,13 @@ package by.andersen.coworkingspace.service;
 import by.andersen.coworkingspace.dto.LoginDto;
 import by.andersen.coworkingspace.dto.RegisterDto;
 import by.andersen.coworkingspace.dto.TokensDto;
-import by.andersen.coworkingspace.entity.Token;
+import by.andersen.coworkingspace.entity.RefreshToken;
 import by.andersen.coworkingspace.entity.User;
-import by.andersen.coworkingspace.repository.TokenRepository;
+import by.andersen.coworkingspace.repository.RefreshTokenRepository;
 import by.andersen.coworkingspace.repository.UserRepository;
 import by.andersen.coworkingspace.utils.JwtUtils;
 import by.andersen.coworkingspace.utils.PasswordHashUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,19 +17,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
-
   private final UserRepository userRepository;
-  private final TokenRepository tokenRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
   private final JwtUtils jwtUtils;
 
   @Autowired
   public AuthService(
       UserRepository userRepository,
-      TokenRepository tokenRepository,
+      RefreshTokenRepository refreshTokenRepository,
       JwtUtils jwtUtils
   ) {
     this.userRepository = userRepository;
-    this.tokenRepository = tokenRepository;
+    this.refreshTokenRepository = refreshTokenRepository;
     this.jwtUtils = jwtUtils;
   }
 
@@ -42,9 +39,13 @@ public class AuthService {
         .passwordHash(PasswordHashUtils.hash(registerDto.getPassword()))
         .build();
 
+    if (userRepository.findByName(newUser.getName()).isPresent()) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User name is taken");
+    }
+
     newUser = userRepository.save(newUser);
     TokensDto tokens = jwtUtils.generateTokens(newUser);
-    saveToken(newUser, tokens.getAccessToken());
+    saveRefreshToken(newUser, tokens.getRefreshToken());
 
     return tokens;
   }
@@ -59,54 +60,40 @@ public class AuthService {
         verifyPassword(loginDto.getPassword(), user.getPasswordHash());
 
     if (!isPasswordValid) {
-      throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Invalid password");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid password");
     }
 
     TokensDto tokens = jwtUtils.generateTokens(user);
-    tokenRepository.deleteByUser(user);
-    saveToken(user, tokens.getAccessToken());
+    refreshTokenRepository.deleteByUser(user);
+    saveRefreshToken(user, tokens.getRefreshToken());
 
     return tokens;
   }
 
   @Transactional
-  public TokensDto refreshToken(
-      HttpServletRequest request
-  ) {
-    String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "Cannot refresh bearer token without token");
-    }
+  public TokensDto refreshToken(String accessToken, String refreshToken) {
+    RefreshToken refreshTokenEntity = refreshTokenRepository.getByRefreshToken(refreshToken)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Refresh token is not found"));
 
-    String refreshToken = authHeader.substring(7);
-    String userName = jwtUtils.extractUsername(refreshToken);
+    String userName = jwtUtils.extractUsername(accessToken);
 
-    if (userName == null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh token user name is empty");
-    }
-
-    User user = userRepository.findByName(userName)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND, "User with name " + userName + " is not found"));
-
-    if (!jwtUtils.validateToken(refreshToken, user.getName())) {
+    if (!jwtUtils.validateToken(refreshToken, userName)) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Refresh token is invalid");
     }
 
-    TokensDto tokensDto = jwtUtils.generateTokens(user);
-    tokenRepository.deleteByUser(user);
-    saveToken(user, tokensDto.getAccessToken());
+    TokensDto tokensDto = jwtUtils.generateTokens(refreshTokenEntity.getUser());
+    refreshTokenRepository.deleteByUser(refreshTokenEntity.getUser());
+    saveRefreshToken(refreshTokenEntity.getUser(), tokensDto.getRefreshToken());
 
     return tokensDto;
   }
 
-  private void saveToken(User user, String jwt) {
-    Token token = Token.builder()
-        .token(jwt)
+  private void saveRefreshToken(User user, String jwt) {
+    RefreshToken refreshToken = RefreshToken.builder()
+        .refreshToken(jwt)
         .user(user)
         .build();
 
-    tokenRepository.save(token);
+    refreshTokenRepository.save(refreshToken);
   }
 }

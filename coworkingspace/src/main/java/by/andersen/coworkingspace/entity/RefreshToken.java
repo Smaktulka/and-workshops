@@ -17,13 +17,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "token", schema = "space")
-public class Token {
+public class RefreshToken {
   @Id
   @GeneratedValue
-  public Long id;
-  public String token;
+  private Long id;
+  private String refreshToken;
 
   @ManyToOne
   @JoinColumn(name = "user_id")
-  public User user;
+  private User user;
 }
